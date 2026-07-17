@@ -1,0 +1,236 @@
+{
+  "login": [
+    {
+      "cenario": "login-sucesso",
+      "descricao": "Login com credenciais válidas",
+      "email": "teste@example.com",
+      "senha": "123456",
+      "esperado": {
+        "sucesso": true,
+        "mensagem": "You are logged in"
+      }
+    },
+    {
+      "cenario": "login-senha-invalida",
+      "descricao": "Login com senha incorreta",
+      "email": "teste@example.com",
+      "senha": "senha_errada",
+      "esperado": {
+        "sucesso": false,
+        "mensagem": "Invalid username or password"
+      }
+    },
+    {
+      "cenario": "login-email-inexistente",
+      "descricao": "Login com email não cadastrado",
+      "email": "naoexiste@example.com",
+      "senha": "123456",
+      "esperado": {
+        "sucesso": false,
+        "mensagem": "Invalid username or password"
+      }
+    },
+    {
+      "cenario": "login-campos-vazios",
+      "descricao": "Login sem preencher campos",
+      "email": "",
+      "senha": "",
+      "esperado": {
+        "sucesso": false,
+        "mensagem": "Please enter all fields"
+      }
+    },
+    {
+      "cenario": "login-email-vazio",
+      "descricao": "Login apenas com senha (email vazio)",
+      "email": "",
+      "senha": "123456",
+      "esperado": {
+        "sucesso": false,
+        "mensagem": "Please enter all fields"
+      }
+    },
+    {
+      "cenario": "login-senha-vazia",
+      "descricao": "Login apenas com email (senha vazia)",
+      "email": "teste@example.com",
+      "senha": "",
+      "esperado": {
+        "sucesso": false,
+        "mensagem": "Please enter all fields"
+      }
+    }
+  ],
+  "cadastro": [
+    {
+      "cenario": "cadastro-sucesso",
+      "descricao": "Cadastro com dados válidos",
+      "email": "novo.usuario@example.com",
+      "senha": "nova123",
+      "confirmarSenha": "nova123",
+      "nome": "Novo Usuario",
+      "esperado": {
+        "sucesso": true,
+        "mensagem": "You have successfully registered"
+      }
+    },
+    {
+      "cenario": "cadastro-email-invalido",
+      "descricao": "Cadastro com email em formato inválido",
+      "email": "email-invalido",
+      "senha": "123456",
+      "confirmarSenha": "123456",
+      "nome": "Usuario Teste",
+      "esperado": {
+        "sucesso": false,
+        "mensagem": "Please enter a valid email"
+      }
+    },
+    {
+      "cenario": "cadastro-senhas-diferentes",
+      "descricao": "Cadastro com senhas que não coincidem",
+      "email": "teste@example.com",
+      "senha": "123456",
+      "confirmarSenha": "654321",
+      "nome": "Usuario Teste",
+      "esperado": {
+        "sucesso": false,
+        "mensagem": "Passwords do not match"
+      }
+    },
+    {
+      "cenario": "cadastro-campos-vazios",
+      "descricao": "Cadastro sem preencher todos os campos",
+      "email": "",
+      "senha": "",
+      "confirmarSenha": "",
+      "nome": "",
+      "esperado": {
+        "sucesso": false,
+        "mensagem": "Please complete all fields"
+      }
+    },
+    {
+      "cenario": "cadastro-senha-curta",
+      "descricao": "Cadastro com senha muito curta",
+      "email": "teste@example.com",
+      "senha": "123",
+      "confirmarSenha": "123",
+      "nome": "Usuario Teste",
+      "esperado": {
+        "sucesso": false,
+        "mensagem": "Password must be at least 6 characters"
+      }
+    }
+  ],
+  "formulario": [
+    {
+      "cenario": "formulario-completo",
+      "descricao": "Preenchimento de formulário com todos os campos",
+      "dados": {
+        "nome": "João Silva",
+        "email": "joao.silva@example.com",
+        "telefone": "11999999999",
+        "endereco": "Rua Teste, 123",
+        "cidade": "São Paulo",
+        "estado": "SP",
+        "cep": "01234567"
+      },
+      "esperado": {
+        "sucesso": true,
+        "mensagem": "Form submitted successfully"
+      }
+    },
+    {
+      "cenario": "formulario-obrigatorio-vazio",
+      "descricao": "Formulário sem campos obrigatórios",
+      "dados": {
+        "nome": "",
+        "email": "",
+        "telefone": "",
+        "endereco": "",
+        "cidade": "",
+        "estado": "",
+        "cep": ""
+      },
+      "esperado": {
+        "sucesso": false,
+        "mensagem": "This field is required"
+      }
+    },
+    {
+      "cenario": "formulario-email-invalido",
+      "descricao": "Formulário com email inválido",
+      "dados": {
+        "nome": "Teste Usuario",
+        "email": "email-invalido",
+        "telefone": "11999999999",
+        "endereco": "Rua Teste, 123",
+        "cidade": "São Paulo",
+        "estado": "SP",
+        "cep": "01234567"
+      },
+      "esperado": {
+        "sucesso": false,
+        "mensagem": "Please enter a valid email"
+      }
+    }
+  ],
+  "navegacao": [
+    {
+      "cenario": "navegacao-menu-login",
+      "descricao": "Navegação do menu para tela de login",
+      "origem": "menu",
+      "destino": "login",
+      "esperado": {
+        "tela": "Login"
+      }
+    },
+    {
+      "cenario": "navegacao-login-menu",
+      "descricao": "Navegação da tela de login para o menu",
+      "origem": "login",
+      "destino": "menu",
+      "esperado": {
+        "tela": "WebView"
+      }
+    },
+    {
+      "cenario": "navegacao-botton-tab",
+      "descricao": "Navegação pelas abas do menu inferior",
+      "abas": ["Home", "WebView", "Forms", "Swipe"],
+      "esperado": {
+        "todas_acessiveis": true
+      }
+    }
+  ],
+  "mensagens_erro": [
+    {
+      "cenario": "erro-login-invalido",
+      "descricao": "Mensagem de erro para login inválido",
+      "acao": "login_com_credenciais_invalidas",
+      "esperado": {
+        "mensagem": "Invalid username or password",
+        "tipo": "toast"
+      }
+    },
+    {
+      "cenario": "erro-campo-obrigatorio",
+      "descricao": "Mensagem de erro para campo obrigatório",
+      "acao": "submeter_formulario_vazio",
+      "esperado": {
+        "mensagem": "This field is required",
+        "tipo": "field"
+      }
+    },
+    {
+      "cenario": "erro-email-invalido",
+      "descricao": "Mensagem de erro para email em formato inválido",
+      "acao": "submeter_email_invalido",
+      "esperado": {
+        "mensagem": "Please enter a valid email",
+        "tipo": "field"
+      }
+    }
+  ]
+}

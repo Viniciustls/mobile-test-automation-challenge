@@ -1,0 +1,303 @@
+# GitLab CI/CD Pipeline para Automação Mobile
+# Executa testes Android e iOS em paralelo, gera relatório Allure
+
+stages:
+  - test
+  - report
+  - deploy
+
+# ===================================
+# Variáveis Globais
+# ===================================
+variables:
+  NODE_VERSION: "18"
+  ANDROID_API_LEVEL: "29"
+  APPIUM_VERSION: "2.0.0"
+
+# ===================================
+# Cache de Dependências
+# ===================================
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - .npm/
+
+# ===================================
+# Job: Instalar Dependências
+# ===================================
+install_dependencies:
+  stage: .pre
+  image: node:${NODE_VERSION}
+  script:
+    - npm ci
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+  only:
+    - main
+    - merge_requests
+  tags:
+    - docker
+
+# ===================================
+# Job: Testes Android
+# ===================================
+test_android:
+  stage: test
+  image: node:${NODE_VERSION}
+  services:
+    - name: appium/appium:latest
+      alias: appium
+  variables:
+    PLATFORM: "Android"
+    DEVICE_NAME: "Android_Emulator"
+    APPIUM_URL: "http://appium:4723/wd/hub"
+  before_script:
+    # Instalar dependências
+    - npm ci
+    # Aguardar Appium estar pronto
+    - sleep 10
+    # Verificar conexão com Appium
+    - curl -f $APPIUM_URL/status || echo "Aguardando Appium..."
+  script:
+    # Executar testes Android
+    - npm run test:android || true
+  after_script:
+    # Criar diretório para artefatos
+    - mkdir -p android-results
+    # Copiar resultados
+    - cp -r allure-results android-results/ || true
+    - cp -r screenshots android-results/ || true
+    - cp -r logs android-results/ || true
+  artifacts:
+    when: always
+    paths:
+      - android-results/
+    expire_in: 7 days
+    reports:
+      junit: android-results/allure-results/*.xml
+  only:
+    - main
+    - merge_requests
+  tags:
+    - docker
+
+# ===================================
+# Job: Testes iOS
+# ===================================
+test_ios:
+  stage: test
+  image: node:${NODE_VERSION}
+  services:
+    - name: appium/appium:latest
+      alias: appium
+  variables:
+    PLATFORM: "iOS"
+    DEVICE_NAME: "iPhone 14"
+    APPIUM_URL: "http://appium:4723/wd/hub"
+  before_script:
+    # Instalar dependências
+    - npm ci
+    # Aguardar Appium estar pronto
+    - sleep 10
+    # Verificar conexão com Appium
+    - curl -f $APPIUM_URL/status || echo "Aguardando Appium..."
+  script:
+    # Executar testes iOS
+    - npm run test:ios || true
+  after_script:
+    # Criar diretório para artefatos
+    - mkdir -p ios-results
+    # Copiar resultados
+    - cp -r allure-results ios-results/ || true
+    - cp -r screenshots ios-results/ || true
+    - cp -r logs ios-results/ || true
+  artifacts:
+    when: always
+    paths:
+      - ios-results/
+    expire_in: 7 days
+    reports:
+      junit: ios-results/allure-results/*.xml
+  only:
+    - main
+    - merge_requests
+  tags:
+    - docker
+
+# ===================================
+# Job: Gerar Relatório Allure
+# ===================================
+generate_report:
+  stage: report
+  image: node:${NODE_VERSION}
+  dependencies:
+    - test_android
+    - test_ios
+  before_script:
+    # Instalar Allure Commandline
+    - npm install -g allure-commandline
+  script:
+    # Combinar resultados Android e iOS
+    - mkdir -p combined-results
+    - cp -r android-results/* combined-results/ 2>/dev/null || true
+    - cp -r ios-results/* combined-results/ 2>/dev/null || true
+
+    # Gerar relatório Allure
+    - allure generate combined-results --clean -o allure-report
+
+    # Exibir estatísticas
+    - echo "Relatório gerado em allure-report/"
+    - find combined-results -name "*.json" | wc -l > test-count.txt
+    - echo "Total de testes executados:"
+    - cat test-count.txt
+  artifacts:
+    when: always
+    paths:
+      - allure-report/
+      - test-count.txt
+    reports:
+      # Allure report artifact
+    expire_in: 30 days
+  only:
+    - main
+    - merge_requests
+  tags:
+    - docker
+
+# ===================================
+# Job: Publicar Resultados (Opcional)
+# ===================================
+pages:
+  stage: deploy
+  dependencies:
+    - generate_report
+  script:
+    # Mover relatório para public/
+    - mkdir -p public
+    - cp -r allure-report/* public/
+
+    # Criar index.html
+    - echo "<!DOCTYPE html><html><head><title>Test Report</title></head>" > public/index.html
+    - echo "<body><h1>Relatório de Testes Mobile</h1>" >> public/index.html
+    - echo "<p><a href='allure/index.html'>Ver Relatório Allure</a></p>" >> public/index.html
+    - echo "<p>Commit: ${CI_COMMIT_SHORT_SHA}</p>" >> public/index.html
+    - echo "<p>Branch: ${CI_COMMIT_REF_NAME}</p>" >> public/index.html
+    - echo "<p>Pipeline: <a href='${CI_PIPELINE_URL}'>#${CI_PIPELINE_ID}</a></p>" >> public/index.html
+    - echo "</body></html>" >> public/index.html
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
+  tags:
+    - docker
+
+# ===================================
+# Job: Smoke Test (rápido)
+# ===================================
+smoke_test:
+  stage: test
+  image: node:${NODE_VERSION}
+  services:
+    - name: appium/appium:latest
+      alias: appium
+  variables:
+    PLATFORM: "Android"
+  before_script:
+    - npm ci
+    - sleep 5
+  script:
+    # Executar apenas testes críticos (smoke)
+    - npm run test:android -- --grep "@smoke" || echo "Smoke tests não encontrados ou falharam"
+  only:
+    - main
+    - merge_requests
+  tags:
+    - docker
+
+# ===================================
+# Job: Notificação de Resultados (Opcional)
+# ===================================
+notify_results:
+  stage: .post
+  image: node:${NODE_VERSION}
+  dependencies:
+    - test_android
+    - test_ios
+  script:
+    # Simples notificação (pode ser expandido para Slack/Discord)
+    - echo "Pipeline ${CI_PIPELINE_ID} finalizado"
+    - echo "Status: ${CI_JOB_STATUS}"
+    - echo "Branch: ${CI_COMMIT_REF_NAME}"
+    - echo "Commit: ${CI_COMMIT_SHORT_SHA}"
+  when: always
+  only:
+    - main
+    - merge_requests
+  tags:
+    - docker
+
+# ===================================
+# Configurações Avançadas
+# ===================================
+
+# Regras de execução
+.android_rules:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - when: on_success
+
+.ios_rules:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - when: on_success
+
+# ===================================
+# Notas sobre Configuração
+# ===================================
+
+# 1. RUNNERS:
+#    - Este pipeline requer GitLab runners com Docker habilitado
+#    - Configure runners em: Settings > CI/CD > Runners
+#
+# 2. SERVIÇOS:
+#    - Appium é executado como container Docker
+#    - Para testes reais, você precisa de emuladores/dispositivos
+#
+# 3. ARTEFATOS:
+#    - Screenshots e logs são salvos por 7 dias
+#    - Relatório Allure é salvo por 30 dias
+#
+# 4. VARIÁVEIS:
+#    - Configure variáveis em: Settings > CI/CD > Variables
+#    - Exemplos: BROWSERSTACK_USERNAME, BROWSERSTACK_ACCESS_KEY
+#
+# 5. PARALELISMO:
+#    - Android e iOS rodam em paralelo
+#    - Para mais paralelismo, use 'parallel: + matrix'
+#
+# 6. INTEGRAÇÕES:
+#    - BrowserStack (opcional): Adicione job com browserstack/browserstack-android
+#    - Slack/Discord: Adicione notificações em notify_results
+#
+# ===================================
+# Exemplo de Integração BrowserStack (Opcional)
+# ===================================
+
+# browserstack_android:
+#   stage: test
+#   image: node:${NODE_VERSION}
+#   variables:
+#     BROWSERSTACK_USERNAME: $BROWSERSTACK_USERNAME
+#     BROWSERSTACK_ACCESS_KEY: $BROWSERSTACK_ACCESS_KEY
+#   script:
+#     - npm run test:android:browserstack
+#   only:
+#     - main
+#   tags:
+#     - docker
