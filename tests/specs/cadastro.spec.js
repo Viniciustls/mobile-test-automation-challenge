@@ -1,77 +1,82 @@
-const { expect } = require('chai');
 const LoginPage = require('../pages/login.page');
 const CadastroPage = require('../pages/cadastro.page');
-const { generateEmail } = require('../helpers/data-helper');
-const { log } = require('../helpers/utils');
 
-describe('Testes de Cadastro (Sign Up)', function () {
-  let loginPage;
-  let cadastroPage;
+describe('Cadastro de usuário', () => {
 
-  beforeEach(async function () {
-    loginPage = new LoginPage();
-    cadastroPage = new CadastroPage();
+  beforeEach(async () => {
+    await $('//android.widget.Button[@content-desc="Login"]')
+      .click();
 
-    const loginTab = $('//android.widget.Button[@content-desc="Login"]');
-    await loginTab.waitForDisplayed({ timeout: 10000 });
-    await loginTab.click();
+    await LoginPage.navigateToSignUp();
 
-    await loginPage.navigateToSignUp();
-    await cadastroPage.waitForElementVisible($(cadastroPage.emailInput));
+    await expect(CadastroPage.emailInput)
+      .toBeDisplayed();
   });
 
-  it('deve realizar cadastro com sucesso - email válido e senha com 8+ caracteres', async function () {
-    log('\n=== CENÁRIO 1: Cadastro com Sucesso ===', 'info');
+  const email = 'test@example.com';
+  const senha = 'password123';
+  const confirmSenha = 'password123';
+  const senhaCurta = '1234567';
+  const invalidEmail = 'teste';
 
-    const email = generateEmail('testexample.com');
-    const password = 'password123';
-    const confirmPassword = 'password123';
+  it('deve realizar cadastro com sucesso usando dados válidos', async () => {
+    await CadastroPage.register(
+      email,
+      senha,
+      confirmSenha
+    );
 
-    await cadastroPage.performRegistration(email, password, confirmPassword);
-    await cadastroPage.wait(3000);
+    await expect(CadastroPage.successAlertTitle)
+      .toBeDisplayed();
 
-    const cadastroSuccess = await cadastroPage.isRegistrationSuccess();
-    expect(cadastroSuccess, 'Cadastro deveria ter sido bem-sucedido').to.be.true;
-
-    await cadastroPage.acceptSuccessAlert();
+    await CadastroPage.acceptSuccessAlert();
   });
 
-  it('deve exibir erro ao tentar cadastro com senha menor que 8 caracteres', async function () {
-    log('\n=== CENÁRIO 2: Validação Senha < 8 Caracteres ===', 'info');
+  it('deve exibir erro ao cadastrar com senha menor que 8 caracteres', async () => {
+    await CadastroPage.register(
+      email,
+      senhaCurta,
+      senhaCurta
+    );
 
-    const email = generateEmail('testexample.com');
-    const shortPassword = '1234567';
-    const confirmPassword = '1234567';
+    await expect(CadastroPage.shortPasswordMessage)
+      .toBeDisplayed();
 
-    await cadastroPage.performRegistrationWithShortPassword(email, shortPassword, confirmPassword);
-    await cadastroPage.wait(3000);
-
-    const hasError = await cadastroPage.hasShortPasswordError();
-    const hasAnyError = await cadastroPage.getErrorMessage() !== '';
-
-    expect(hasError || hasAnyError, 'Deveria mostrar mensagem de erro para senha curta').to.be.true;
-
-    const onSignUpPage = await cadastroPage.isOnSignUpPage();
-    expect(onSignUpPage, 'Deveria permanecer na tela de cadastro').to.be.true;
+    await expect(CadastroPage.shortPasswordMessage)
+      .toHaveText(
+        'Please enter at least 8 characters'
+      );
   });
 
-  it('deve exibir erro ao tentar cadastro com confirmação de senha diferente', async function () {
-    log('\n=== CENÁRIO 3: Confirmação de Senha Diferente ===', 'info');
+  it('deve exibir erro ao cadastrar com confirmação de senha diferente', async () => {
+    await CadastroPage.register(
+      email,
+      senha,
+      senhaCurta
+    );
 
-    const email = generateEmail('testexample.com');
-    const password = 'password123';
-    const differentPassword = 'password456';
+    await expect(CadastroPage.passwordMismatchMessage)
+      .toBeDisplayed();
 
-    await cadastroPage.performRegistrationWithMismatchedPasswords(email, password, differentPassword);
-    await cadastroPage.wait(3000);
+    await expect(CadastroPage.passwordMismatchMessage)
+      .toHaveText(
+        'Please enter the same password'
+      );
+  });
 
-    const hasError = await cadastroPage.hasPasswordMismatchError();
-    const errorMessage = await cadastroPage.getPasswordMismatchErrorMessage();
+  it('deve exibir erro ao cadastrar com email inválido', async () => {
+    await CadastroPage.register(
+      invalidEmail,
+      senha,
+      confirmSenha
+    );
 
-    expect(hasError, 'Deveria mostrar mensagem de senhas diferentes').to.be.true;
-    expect(errorMessage, 'Deveria mostrar mensagem "Please enter the same password"').to.equal('Please enter the same password');
+    await expect(CadastroPage.invalidEmailMessage)
+      .toBeDisplayed();
 
-    const onSignUpPage = await cadastroPage.isOnSignUpPage();
-    expect(onSignUpPage, 'Deveria permanecer na tela de cadastro').to.be.true;
+    await expect(CadastroPage.invalidEmailMessage)
+      .toHaveText(
+        'Please enter a valid email address'
+      );
   });
 });
