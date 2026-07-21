@@ -1,234 +1,152 @@
-/**
- * CadastroPage - Page Object para tela de Cadastro
- * Responsável por todas as interações com a tela de cadastro/registro
- */
-
 const BasePage = require('./base.page');
 const { MESSAGES, PLATFORM } = require('../helpers/constants');
 const { log } = require('../helpers/utils');
 
 class CadastroPage extends BasePage {
-  // ===================================
-  // Elementos - Selectors
-  // ===================================
 
-  /**
-   * Selector para campo de email
-   * @returns {string}
-   */
   get emailInput() {
     return this.getPlatformSelector({
-      android: '//android.widget.EditText[1]',
+      android: '//android.widget.EditText[@content-desc="input-email"]',
       ios: "//XCUIElementTypeTextField[@name='input-email']",
-      default: '//android.widget.EditText[1]',
+      default: '//android.widget.EditText[@content-desc="input-email"]',
     });
   }
 
-  /**
-   * Selector para campo de senha
-   * @returns {string}
-   */
   get passwordInput() {
     return this.getPlatformSelector({
-      android: '//android.widget.EditText[2]',
+      android: '//android.widget.EditText[@content-desc="input-password"]',
       ios: "//XCUIElementTypeSecureTextField[@name='input-password']",
-      default: '//android.widget.EditText[2]',
+      default: '//android.widget.EditText[@content-desc="input-password"]',
     });
   }
 
-  /**
-   * Selector para campo de confirmar senha
-   * @returns {string}
-   */
   get confirmPasswordInput() {
     return this.getPlatformSelector({
-      android: '//android.widget.EditText[3]',
+      android: '//android.widget.EditText[@content-desc="input-repeat-password"]',
       ios: "//XCUIElementTypeSecureTextField[@name='input-repeat-password']",
-      default: '//android.widget.EditText[3]',
+      default: '//android.widget.EditText[@content-desc="input-repeat-password"]',
     });
   }
 
-  /**
-   * Selector para campo de nome
-   * @returns {string}
-   */
-  get nameInput() {
+  get passwordMismatchMessage() {
     return this.getPlatformSelector({
-      android: '//android.widget.EditText[4]',
-      ios: "//XCUIElementTypeTextField[@name='input-name']",
-      default: '//android.widget.EditText[4]',
+      android: '//android.widget.EditText[@content-desc="input-repeat-password"]/following-sibling::android.widget.TextView[@text="Please enter the same password"]',
+      ios: "//XCUIElementTypeTextField[@name='input-repeat-password']/following-sibling::XCUIElementTypeStaticText[@name='Please enter the same password']",
+      default: '//android.widget.EditText[@content-desc="input-repeat-password"]/following-sibling::*[@text="Please enter the same password"]',
     });
   }
 
-  /**
-   * Selector para botão de confirmar cadastro
-   * @returns {string}
-   */
   get confirmButton() {
     return this.getPlatformSelector({
-      android: '//android.widget.Button[@text="Confirm"]',
-      ios: "//XCUIElementTypeButton[@name='button-CONFIRM']",
-      default: '//android.widget.Button[@text="Confirm"]',
+      android: '//android.view.ViewGroup[@content-desc="button-SIGN UP"]',
+      ios: "//XCUIElementTypeButton[@name='button-SIGN UP']",
+      default: '//android.view.ViewGroup[@content-desc="button-SIGN UP"]',
     });
   }
 
-  /**
-   * Selector para botão voltar
-   * @returns {string}
-   */
-  get backButton() {
-    return this.getPlatformSelector({
-      android: '//android.widget.Button[@content-desc="Go back"]',
-      ios: "//XCUIElementTypeButton[@name='Go back']",
-      default: '//android.widget.Button[@content-desc="Go back"]',
-    });
-  }
-
-  /**
-   * Selector para título da tela
-   * @returns {string}
-   */
   get screenTitle() {
     return this.getPlatformSelector({
-      android: '//android.view.View[@text="Sign Up"]',
-      ios: "//XCUIElementTypeStaticText[@name='Sign Up']",
-      default: '//android.view.View[@text="Sign Up"]',
+      android: '//android.widget.TextView[@text="Login / Sign up Form"]',
+      ios: "//XCUIElementTypeStaticText[@name='Login / Sign up Form']",
+      default: '//android.widget.TextView[@text="Login / Sign up Form"]',
     });
   }
 
-  // ===================================
-  // Ações Principais
-  // ===================================
+  get successAlertTitle() {
+    return this.getPlatformSelector({
+      android: '//android.widget.TextView[contains(@text, "Signed Up") or contains(@text, "successfully signed up")]',
+      ios: "//XCUIElementTypeStaticText[contains(@name, 'Signed Up')]",
+      default: '//android.widget.TextView[contains(@text, "Signed Up")]',
+    });
+  }
 
-  /**
-   * Preenche campo de email
-   * @param {string} email - Email para preencher
-   */
+  get successAlertOkButton() {
+    return this.getPlatformSelector({
+      android: '//android.widget.Button[@text="OK" or @text="Ok"]',
+      ios: "//XCUIElementTypeButton[@label='OK' or @name='OK']",
+      default: '//android.widget.Button[@text="OK"]',
+    });
+  }
+
   async fillEmail(email) {
-    log(`Preenchendo email: ${email}`, 'info');
     await this.fillInput($(this.emailInput), email);
   }
 
-  /**
-   * Preenche campo de senha
-   * @param {string} password - Senha para preencher
-   */
   async fillPassword(password) {
-    log(`Preenchendo senha`, 'info');
     await this.fillInput($(this.passwordInput), password);
   }
 
-  /**
-   * Preenche campo de confirmar senha
-   * @param {string} confirmPassword - Confirmação de senha
-   */
   async fillConfirmPassword(confirmPassword) {
-    log(`Preenchendo confirmação de senha`, 'info');
     await this.fillInput($(this.confirmPasswordInput), confirmPassword);
   }
 
-  /**
-   * Preenche campo de nome
-   * @param {string} name - Nome para preencher
-   */
-  async fillName(name) {
-    log(`Preenchendo nome: ${name}`, 'info');
-    await this.fillInput($(this.nameInput), name);
-  }
-
-  /**
-   * Clica no botão de confirmar cadastro
-   */
-  async clickConfirm() {
-    log(`Clicando no botão Confirm`, 'info');
+  async clickSignUp() {
     await this.clickElement($(this.confirmButton));
   }
 
-  /**
-   * Clica no botão voltar
-   */
-  async clickBack() {
-    log(`Clicando no botão voltar`, 'info');
-    await this.clickElement($(this.backButton));
-  }
-
-  // ===================================
-  // Fluxos Completos
-  // ===================================
-
-  /**
-   * Realiza cadastro completo
-   * @param {string} email - Email
-   * @param {string} password - Senha
-   * @param {string} confirmPassword - Confirmação de senha
-   * @param {string} name - Nome
-   */
-  async performRegistration(email, password, confirmPassword, name) {
-    log(`Realizando cadastro para: ${email}`, 'info');
+  async performRegistration(email, password, confirmPassword) {
+    log(`Realizando cadastro`, 'info');
 
     await this.fillEmail(email);
     await this.fillPassword(password);
     await this.fillConfirmPassword(confirmPassword);
-    await this.fillName(name);
 
     await this.hideKeyboard();
-    await this.clickConfirm();
+    await this.clickSignUp();
   }
 
-  /**
-   * Realiza cadastro com dados vazios
-   */
   async performRegistrationWithEmptyFields() {
     log(`Tentando cadastro com campos vazios`, 'info');
-    await this.clickConfirm();
+    await this.clickSignUp();
   }
 
-  /**
-   * Realiza cadastro com senhas que não coincidem
-   * @param {string} email - Email
-   * @param {string} password - Senha
-   * @param {string} differentPassword - Senha diferente
-   * @param {string} name - Nome
-   */
-  async performRegistrationWithMismatchedPasswords(email, password, differentPassword, name) {
+  async performRegistrationWithShortPassword(email, shortPassword, confirmPassword) {
+    log(`Tentando cadastro com senha menor que 8 caracteres`, 'info');
+
+    await this.fillEmail(email);
+    await this.fillPassword(shortPassword);
+    await this.fillConfirmPassword(confirmPassword);
+
+    await this.hideKeyboard();
+    await this.clickSignUp();
+  }
+
+  async performRegistrationWithMismatchedPasswords(email, password, differentPassword) {
     log(`Tentando cadastro com senhas diferentes`, 'info');
 
     await this.fillEmail(email);
     await this.fillPassword(password);
     await this.fillConfirmPassword(differentPassword);
-    await this.fillName(name);
 
     await this.hideKeyboard();
-    await this.clickConfirm();
+    await this.clickSignUp();
   }
 
-  /**
-   * Realiza cadastro com email inválido
-   * @param {string} invalidEmail - Email inválido
-   * @param {string} password - Senha
-   * @param {string} confirmPassword - Confirmação de senha
-   * @param {string} name - Nome
-   */
-  async performRegistrationWithInvalidEmail(invalidEmail, password, confirmPassword, name) {
-    log(`Tentando cadastro com email inválido: ${invalidEmail}`, 'info');
+  async acceptSuccessAlert() {
+    log(`Fechando alerta de cadastro realizado`, 'info');
 
-    await this.fillEmail(invalidEmail);
-    await this.fillPassword(password);
-    await this.fillConfirmPassword(confirmPassword);
-    await this.fillName(name);
+    try {
+      const okButton = $(this.successAlertOkButton);
 
-    await this.hideKeyboard();
-    await this.clickConfirm();
+      await this.wait(2000);
+      await this.waitForElementVisible(okButton, 5000);
+      await this.clickElement(okButton);
+
+      await this.wait(2000);
+
+      const title = $(this.successAlertTitle);
+      if (await this.isElementVisible(title)) {
+        await this.clickElement(okButton);
+        await this.wait(1000);
+      }
+
+      log(`Cadastro realizado com sucesso`, 'success');
+    } catch (error) {
+      log(`Erro ao fechar alerta: ${error.message}`, 'warning');
+      throw error;
+    }
   }
 
-  // ===================================
-  // Validações
-  // ===================================
-
-  /**
-   * Verifica se está na tela de cadastro
-   * @returns {Promise<boolean>}
-   */
   async isOnSignUpPage() {
     try {
       const title = $(this.screenTitle);
@@ -262,10 +180,6 @@ class CadastroPage extends BasePage {
     }
   }
 
-  /**
-   * Verifica se aparece mensagem de erro de email já existe
-   * @returns {Promise<boolean>}
-   */
   async hasEmailAlreadyExistsError() {
     try {
       await this.wait(2000);
@@ -283,31 +197,97 @@ class CadastroPage extends BasePage {
     }
   }
 
-  /**
-   * Verifica se aparece mensagem de senhas não coincidem
-   * @returns {Promise<boolean>}
-   */
   async hasPasswordMismatchError() {
     try {
       await this.wait(2000);
 
-      const errorSelector = this.getPlatformSelector({
-        android: '//android.view.View[contains(@text, "Passwords do not match")]',
-        ios: '//XCUIElementTypeStaticText[contains(@name, "Passwords do not match")]',
-        default: '//*[contains(@text, "Passwords do not match")]',
-      });
+      const mismatchSelectors = [
+        '//android.widget.TextView[@text="Please enter the same password"]',
+        '//android.widget.TextView[contains(@text, "Please enter the same password")]',
+        '//android.view.View[@text="Please enter the same password"]',
+        '//android.view.View[contains(@text, "Please enter the same password")]',
+        '//android.widget.EditText[@content-desc="input-repeat-password"]/following-sibling::android.widget.TextView[contains(@text, "same password")]',
+        '//*[contains(@text, "Please enter the same password")]',
+        '//android.widget.TextView[contains(@text, "same password")]',
+      ];
 
-      const errorElement = $(errorSelector);
-      return await this.isElementVisible(errorElement);
+      for (const selector of mismatchSelectors) {
+        try {
+          const element = $(selector);
+          if (await this.isElementVisible(element)) {
+            log(`Validação exibida: Please enter the same password`, 'info');
+            return true;
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+
+      return false;
     } catch (error) {
       return false;
     }
   }
 
-  /**
-   * Verifica se aparece mensagem de campos obrigatórios
-   * @returns {Promise<boolean>}
-   */
+  async getPasswordMismatchErrorMessage() {
+    try {
+      await this.wait(2000);
+
+      const mismatchSelectors = [
+        '//android.widget.TextView[@text="Please enter the same password"]',
+        '//android.widget.TextView[contains(@text, "Please enter the same password")]',
+        '//android.view.View[@text="Please enter the same password"]',
+        '//android.widget.TextView[contains(@text, "same password")]',
+      ];
+
+      for (const selector of mismatchSelectors) {
+        try {
+          const element = $(selector);
+          if (await this.isElementVisible(element)) {
+            return await this.getElementText(element);
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+
+      return '';
+    } catch (error) {
+      return '';
+    }
+  }
+
+  async hasShortPasswordError() {
+    try {
+      await this.wait(2000);
+
+      const errorSelectors = [
+        '//android.widget.TextView[@text="please enter at least 8 characters"]',
+        '//android.widget.TextView[contains(@text, "please enter at least 8 characters")]',
+        '//android.view.View[@text="please enter at least 8 characters"]',
+        '//android.view.View[contains(@text, "please enter at least 8 characters")]',
+        '//android.widget.EditText[@resource-id="RNE__Input__text-input"]/following-sibling::android.widget.TextView[contains(@text, "8 characters")]',
+        '//*[contains(@text, "please enter at least 8 characters")]',
+      ];
+
+      for (const selector of errorSelectors) {
+        try {
+          const element = $(selector);
+          if (await this.isElementVisible(element)) {
+            log(`Validação exibida: Please enter at least 8 characters`, 'info');
+            return true;
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
   async hasRequiredFieldsError() {
     try {
       await this.wait(2000);
@@ -325,10 +305,7 @@ class CadastroPage extends BasePage {
     }
   }
 
-  /**
-   * Verifica se aparece mensagem de email inválido
-   * @returns {Promise<boolean>}
-   */
+  
   async hasInvalidEmailError() {
     try {
       await this.wait(2000);
@@ -346,57 +323,42 @@ class CadastroPage extends BasePage {
     }
   }
 
-  /**
-   * Obtém mensagem de erro atual
-   * @returns {Promise<string>}
-   */
   async getErrorMessage() {
     try {
       const errorSelectors = [
-        'Email already exists',
-        'Passwords do not match',
-        'complete all fields',
-        'valid email',
+        { message: 'please enter at least 8 characters', selector: '//android.widget.TextView[@text="please enter at least 8 characters"]' },
+        { message: '8 characters', selector: '//android.widget.TextView[contains(@text, "8 characters")]' },
+        { message: 'Passwords do not match', selector: '//android.view.View[contains(@text, "Passwords do not match")]' },
+        { message: 'complete all fields', selector: '//android.view.View[contains(@text, "complete all fields")]' },
+        { message: 'valid email', selector: '//android.view.View[contains(@text, "valid email")]' },
+        { message: 'Email already exists', selector: '//android.view.View[contains(@text, "Email already exists")]' },
       ];
 
-      for (const message of errorSelectors) {
-        const errorSelector = this.getPlatformSelector({
-          android: `//android.view.View[contains(@text, "${message}")]`,
-          ios: `//XCUIElementTypeStaticText[contains(@name, "${message}")]`,
-          default: `//*[contains(@text, "${message}")]`,
-        });
-
-        const errorElement = $(errorSelector);
-
-        if (await this.isElementVisible(errorElement)) {
-          return await this.getElementText(errorElement);
+      for (const { message, selector } of errorSelectors) {
+        try {
+          const errorElement = $(selector);
+          if (await this.isElementVisible(errorElement)) {
+            return await errorElement.getText();
+          }
+        } catch (e) {
+          continue;
         }
       }
 
       return '';
     } catch (error) {
-      log(`Erro ao obter mensagem de erro: ${error.message}`, 'error');
       return '';
     }
   }
 
-  // ===================================
-  // Limpeza e Setup
-  // ===================================
 
-  /**
-   * Limpa campos do formulário
-   */
   async clearForm() {
-    log(`Limpando campos do formulário`, 'info');
-
     try {
       const emailField = $(this.emailInput);
       const passwordField = $(this.passwordInput);
       const confirmPasswordField = $(this.confirmPasswordInput);
-      const nameField = $(this.nameInput);
 
-      const fields = [emailField, passwordField, confirmPasswordField, nameField];
+      const fields = [emailField, passwordField, confirmPasswordField];
 
       for (const field of fields) {
         if (await this.isElementVisible(field)) {
@@ -404,104 +366,74 @@ class CadastroPage extends BasePage {
         }
       }
     } catch (error) {
-      log(`Erro ao limpar formulário: ${error.message}`, 'warning');
+      // Silencioso: não logar erro de limpeza
     }
   }
 
-  /**
-   * Verifica se campos estão limpos
-   * @returns {Promise<boolean>}
-   */
   async areFieldsClean() {
     try {
       const emailValue = await this.getElementValue($(this.emailInput));
       const passwordValue = await this.getElementValue($(this.passwordInput));
       const confirmValue = await this.getElementValue($(this.confirmPasswordInput));
-      const nameValue = await this.getElementValue($(this.nameInput));
 
-      return emailValue === '' && passwordValue === '' &&
-             confirmValue === '' && nameValue === '';
+      return emailValue === '' && passwordValue === '' && confirmValue === '';
     } catch (error) {
       return false;
     }
   }
 
-  // ===================================
-  // Elementos Específicos
-  // ===================================
-
-  /**
-   * Obtém valor atual do campo email
-   * @returns {Promise<string>}
-   */
   async getEmailValue() {
     return await this.getElementValue($(this.emailInput));
   }
 
-  /**
-   * Obtém valor atual do campo senha
-   * @returns {Promise<string>}
-   */
   async getPasswordValue() {
     return await this.getElementValue($(this.passwordInput));
   }
 
-  /**
-   * Obtém valor atual do campo confirmar senha
-   * @returns {Promise<string>}
-   */
   async getConfirmPasswordValue() {
     return await this.getElementValue($(this.confirmPasswordInput));
   }
 
-  /**
-   * Obtém valor atual do campo nome
-   * @returns {Promise<string>}
-   */
-  async getNameValue() {
-    return await this.getElementValue($(this.nameInput));
-  }
-
-  /**
-   * Verifica se botão confirmar está habilitado
-   * @returns {Promise<boolean>}
-   */
   async isConfirmButtonEnabled() {
     return await $(this.confirmButton).isEnabled();
   }
 
-  /**
-   * Verifica se botão voltar está visível
-   * @returns {Promise<boolean>}
-   */
-  async isBackButtonVisible() {
-    return await this.isElementVisible($(this.backButton));
-  }
-
-  // ===================================
-  // Debug
-  // ===================================
-
-  /**
-   * Log estado atual do formulário
-   */
   async logFormState() {
-    log('=== Cadastro Form State ===', 'info');
+    log('=== Estado do Formulário de Cadastro ===', 'info');
 
     try {
       const emailValue = await this.getEmailValue();
       const passwordValue = await this.getPasswordValue();
       const confirmValue = await this.getConfirmPasswordValue();
-      const nameValue = await this.getNameValue();
       const confirmEnabled = await this.isConfirmButtonEnabled();
 
       log(`Email: ${emailValue}`, 'info');
-      log(`Password: ${passwordValue ? '***' : ''}`, 'info');
-      log(`Confirm Password: ${confirmValue ? '***' : ''}`, 'info');
-      log(`Name: ${nameValue}`, 'info');
-      log(`Confirm Button Enabled: ${confirmEnabled}`, 'info');
+      log(`Senha preenchida: ${passwordValue ? 'Sim' : 'Não'}`, 'info');
+      log(`Confirmação preenchida: ${confirmValue ? 'Sim' : 'Não'}`, 'info');
+      log(`Botão Sign Up habilitado: ${confirmEnabled ? 'Sim' : 'Não'}`, 'info');
     } catch (error) {
-      log(`Erro ao obter estado: ${error.message}`, 'error');
+      // Silencioso em produção
+    }
+  }
+
+  async debugAllTextViews() {
+    try {
+      log('=== TextViews Visíveis (Debug) ===', 'info');
+      const allTextViews = await $$('android.widget.TextView');
+
+      for (const textView of allTextViews) {
+        try {
+          const text = await textView.getText();
+          if (text && text.trim() !== '') {
+            const visible = await textView.isDisplayed();
+            log(`- "${text}"`, 'info');
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+    } catch (error) {
+      // Silencioso em produção
     }
   }
 }

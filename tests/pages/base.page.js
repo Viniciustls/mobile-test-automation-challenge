@@ -1,47 +1,16 @@
-/**
- * BasePage - Page Object base com métodos comuns
- * Todos os Page Objects devem herdar desta classe
- *
- * Princípios:
- * - Contém métodos genéricos usados por múltiplas páginas
- * - Fornece uma interface consistente para interação com elementos
- * - Reduz duplicação de código
- */
-
 const { expect } = require('chai');
 const { TIMEOUTS, PLATFORM } = require('../helpers/constants');
 const { isAndroid, isIOS, waitForVisible, waitForClickable, log } = require('../helpers/utils');
 
 class BasePage {
-  // ===================================
-  // Platform Detection
-  // ===================================
-
-  /**
-   * Verifica se a plataforma é Android
-   * @returns {Promise<boolean>}
-   */
   async isAndroid() {
     return await isAndroid();
   }
 
-  /**
-   * Verifica se a plataforma é iOS
-   * @returns {Promise<boolean>}
-   */
   async isIOS() {
     return await isIOS();
   }
 
-  // ===================================
-  // Element Interactions - Básicas
-  // ===================================
-
-  /**
-   * Clica em um elemento com wait
-   * @param {WebdriverIO.Element} element - Elemento para clicar
-   * @param {number} timeout - Timeout opcional
-   */
   async clickElement(element, timeout = TIMEOUTS.MEDIUM) {
     try {
       log(`Clicando no elemento...`, 'info');
@@ -52,12 +21,6 @@ class BasePage {
     }
   }
 
-  /**
-   * Preenche campo de texto
-   * @param {WebdriverIO.Element} element - Campo de texto
-   * @param {string} value - Valor para preencher
-   * @param {boolean} clearFirst - Limpar campo antes (padrão: true)
-   */
   async fillInput(element, value, clearFirst = true) {
     try {
       log(`Preenchendo campo com valor: "${value}"`, 'info');
@@ -73,11 +36,6 @@ class BasePage {
     }
   }
 
-  /**
-   * Obtém texto de um elemento
-   * @param {WebdriverIO.Element} element - Elemento
-   * @returns {Promise<string>}
-   */
   async getElementText(element) {
     try {
       await waitForVisible(element);
@@ -87,11 +45,6 @@ class BasePage {
     }
   }
 
-  /**
-   * Obtém valor de um input
-   * @param {WebdriverIO.Element} element - Elemento input
-   * @returns {Promise<string>}
-   */
   async getElementValue(element) {
     try {
       await waitForVisible(element);
@@ -101,15 +54,6 @@ class BasePage {
     }
   }
 
-  // ===================================
-  // Element Interactions - Avançadas
-  // ===================================
-
-  /**
-   * Verifica se elemento está visível
-   * @param {WebdriverIO.Element} element - Elemento
-   * @returns {Promise<boolean>}
-   */
   async isElementVisible(element) {
     try {
       return await element.isDisplayed();
@@ -118,11 +62,6 @@ class BasePage {
     }
   }
 
-  /**
-   * Verifica se elemento existe
-   * @param {WebdriverIO.Element} element - Elemento
-   * @returns {Promise<boolean>}
-   */
   async isElementExisting(element) {
     try {
       return await element.isExisting();
@@ -131,11 +70,6 @@ class BasePage {
     }
   }
 
-  /**
-   * Aguarda elemento ficar visível
-   * @param {WebdriverIO.Element} element - Elemento
-   * @param {number} timeout - Timeout opcional
-   */
   async waitForElementVisible(element, timeout = TIMEOUTS.MEDIUM) {
     try {
       await waitForVisible(element, timeout);
@@ -144,11 +78,6 @@ class BasePage {
     }
   }
 
-  /**
-   * Aguarda elemento ficar habilitado
-   * @param {WebdriverIO.Element} element - Elemento
-   * @param {number} timeout - Timeout opcional
-   */
   async waitForElementEnabled(element, timeout = TIMEOUTS.MEDIUM) {
     try {
       await waitForClickable(element, timeout);
@@ -157,11 +86,6 @@ class BasePage {
     }
   }
 
-  /**
-   * Aguarda elemento existir no DOM
-   * @param {WebdriverIO.Element} element - Elemento
-   * @param {number} timeout - Timeout opcional
-   */
   async waitForElementExist(element, timeout = TIMEOUTS.MEDIUM) {
     try {
       await element.waitForExist({ timeout });
@@ -170,14 +94,6 @@ class BasePage {
     }
   }
 
-  // ===================================
-  // Element Interactions - Scroll
-  // ===================================
-
-  /**
-   * Scroll para elemento
-   * @param {WebdriverIO.Element} element - Elemento alvo
-   */
   async scrollToElement(element) {
     try {
       log(`Scrollando até elemento...`, 'info');
@@ -198,10 +114,6 @@ class BasePage {
     }
   }
 
-  /**
-   * Scroll para baixo
-   * @param {string} direction - 'down' ou 'up'
-   */
   async scroll(direction = 'down') {
     try {
       const isAndroid = await this.isAndroid();
@@ -222,89 +134,51 @@ class BasePage {
     }
   }
 
-  // ===================================
-  // Assertions
-  // ===================================
-
-  /**
-   * Verifica se elemento contém texto
-   * @param {WebdriverIO.Element} element - Elemento
-   * @param {string} text - Texto esperado
-   */
   async assertElementContainsText(element, text) {
     const elementText = await this.getElementText(element);
     expect(elementText.toLowerCase()).to.include(text.toLowerCase());
   }
 
-  /**
-   * Verifica se elemento tem texto exato
-   * @param {WebdriverIO.Element} element - Elemento
-   * @param {string} text - Texto esperado
-   */
   async assertElementTextEquals(element, text) {
     const elementText = await this.getElementText(element);
     expect(elementText.trim()).to.equal(text);
   }
 
-  /**
-   * Verifica se elemento está visível
-   * @param {WebdriverIO.Element} element - Elemento
-   */
   async assertElementVisible(element) {
     const isVisible = await this.isElementVisible(element);
     expect(isVisible, 'Elemento deveria estar visível').to.be.true;
   }
 
-  /**
-   * Verifica se elemento está habilitado
-   * @param {WebdriverIO.Element} element - Elemento
-   */
   async assertElementEnabled(element) {
     const isEnabled = await element.isEnabled();
     expect(isEnabled, 'Elemento deveria estar habilitado').to.be.true;
   }
 
-  // ===================================
-  // Platform-specific Selectors
-  // ===================================
-
-  /**
-   * Retorna selector baseado na plataforma
-   * @param {object} selectors - Objeto com selectors por platform
-   * @returns {string|object} - Selector apropriado
-   */
   getPlatformSelector(selectors) {
     const platform = driver.capabilities.platformName;
 
+    let selector = null;
+
     if (platform === PLATFORM.ANDROID && selectors.android) {
-      return selectors.android;
+      selector = selectors.android;
+    } else if (platform === PLATFORM.IOS && selectors.ios) {
+      selector = selectors.ios;
+    } else {
+      selector = selectors.default || selectors.android;
     }
 
-    if (platform === PLATFORM.IOS && selectors.ios) {
-      return selectors.ios;
+    // Se for array, retornar o primeiro elemento
+    if (Array.isArray(selector)) {
+      return selector[0];
     }
 
-    return selectors.default || selectors.android;
+    return selector;
   }
 
-  // ===================================
-  // Wait Helpers
-  // ===================================
-
-  /**
-   * Sleep/pause simples
-   * @param {number} ms - Milissegundos
-   */
   async wait(ms = TIMEOUTS.SHORT) {
     await browser.pause(ms);
   }
 
-  /**
-   * Wait até que uma condição seja verdadeira
-   * @param {Function} condition - Função que retorna boolean
-   * @param {number} timeout - Timeout máximo
-   * @param {string} message - Mensagem de erro
-   */
   async waitForCondition(condition, timeout = TIMEOUTS.MEDIUM, message = 'Condition not met') {
     const startTime = Date.now();
 
@@ -318,25 +192,11 @@ class BasePage {
     throw new Error(`Timeout aguardando condição: ${message}`);
   }
 
-  // ===================================
-  // Navigation
-  // ===================================
-
-  /**
-   * Navega de volta (back button)
-   */
   async goBack() {
     log(`Navegando de volta...`, 'info');
     await driver.back();
   }
 
-  // ===================================
-  // Keyboard
-  // ===================================
-
-  /**
-   * Pressiona tecla Enter
-   */
   async pressEnter() {
     if (await this.isAndroid()) {
       await driver.pressKeyCode(4); // KEYCODE_BACK
@@ -346,9 +206,6 @@ class BasePage {
     }
   }
 
-  /**
-   * Fecha teclado
-   */
   async hideKeyboard() {
     try {
       if (await this.isAndroid()) {
@@ -363,36 +220,16 @@ class BasePage {
     }
   }
 
-  // ===================================
-  // Screen/Elements Info
-  // ===================================
-
-  /**
-   * Obtém tamanho da tela
-   * @returns {Promise<{width: number, height: number}>}
-   */
   async getScreenSize() {
     const { width, height } = await driver.getWindowSize();
     return { width, height };
   }
 
-  /**
-   * Obtém centro da tela
-   * @returns {Promise<{x: number, y: number}>}
-   */
   async getScreenCenter() {
     const { width, height } = await this.getScreenSize();
     return { x: width / 2, y: height / 2 };
   }
 
-  // ===================================
-  // Screenshot
-  // ===================================
-
-  /**
-   * Captura screenshot
-   * @param {string} filename - Nome do arquivo
-   */
   async captureScreenshot(filename) {
     const screenshotPath = `screenshots/${filename}`;
     await browser.saveScreenshot(screenshotPath);
@@ -400,14 +237,6 @@ class BasePage {
     return screenshotPath;
   }
 
-  // ===================================
-  // Debug Helpers
-  // ===================================
-
-  /**
-   * Log informações do elemento
-   * @param {WebdriverIO.Element} element - Elemento
-   */
   async logElementInfo(element) {
     try {
       const text = await this.getElementText(element).catch(() => 'N/A');
@@ -423,9 +252,6 @@ class BasePage {
     }
   }
 
-  /**
-   * Log página atual
-   */
   async logCurrentPage() {
     const activity = await driver.getCurrentActivity().catch(() => 'N/A');
     const pkgName = await driver.getCurrentPackage().catch(() => 'N/A');

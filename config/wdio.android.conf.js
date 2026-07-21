@@ -1,31 +1,50 @@
-/**
- * Configuração WebdriverIO para Android
- * Extende a configuração compartilhada e adiciona especificidades Android
- */
-
 const { join } = require('path');
 
-const sharedConfig = require('./wdio.shared.conf');
-
-const APP_PATH = process.env.ANDROID_APP_PATH ||
-  join(process.cwd(), 'apps', 'android', 'Android-NativeDemoApp-0.4.0.apk');
-
+const APP_PATH =
+  process.env.ANDROID_APP_PATH ||
+  join(
+    process.cwd(),
+    'apps',
+    'android',
+    'android.wdio.native.app.v2.2.0.apk'
+  );
 
 exports.config = {
-  ...sharedConfig.config,
+  framework: 'mocha',
 
+  mochaOpts: {
+    ui: 'bdd',
+    timeout: 90000,
+  },
 
-  // ===================================
-  // Specs
-  // ===================================
   specs: [
-    join(process.cwd(), 'tests/specs/smoke.spec.js'),
+    join(process.cwd(), 'tests/specs/cadastro.spec.js'),
+    join(process.cwd(), 'tests/specs/login.spec.js'),
+    join(process.cwd(), 'tests/specs/formulario.spec.js'),
+    join(process.cwd(), 'tests/specs/navegacao.spec.js'),
   ],
 
+  reporters: [
+    [
+      'spec',
+      {
+        displaySpecDuration: true,
+        displaySuiteNumber: true,
+      },
+    ],
+    [
+      'allure',
+      {
+        outputDir: 'allure-results',
+        disableWebdriverStepsReporting: false,
+        disableWebdriverScreenshotsReporting: false,
+        useCucumberStepReporter: false,
+      },
+    ],
+  ],
 
-  // ===================================
-  // Capabilities Android
-  // ===================================
+  services: [],
+
   capabilities: [
     {
       platformName: 'Android',
@@ -55,51 +74,20 @@ exports.config = {
       'appium:ignoreUnimportantViews': true,
 
       'appium:disableWindowAnimation': true,
-    }
+    },
   ],
 
+  hostname: 'localhost',
+  port: 4723,
+  path: '/',
+  protocol: 'http',
 
-  // ===================================
-  // Appium Service
-  // ===================================
-  services: [
-    [
-      'appium',
-      {
-        args: {
-          port: 4723,
-          logLevel: 'info',
-        },
-      },
-    ],
-  ],
+  outputDir: join(process.cwd(), 'logs', 'android'),
+  logLevel: 'info',
 
-
-  // ===================================
-  // Logs
-  // ===================================
-  outputDir: join(
-    process.cwd(),
-    'logs',
-    'android'
-  ),
-
-
-  // ===================================
-  // Android timeouts
-  // ===================================
   waitforTimeout: 20000,
 
   connectionRetryTimeout: 90000,
 
   connectionRetryCount: 3,
-
-
-  // ===================================
-  // Mocha
-  // ===================================
-  mochaOpts: {
-    ...sharedConfig.config.mochaOpts,
-    timeout: 90000,
-  },
 };
