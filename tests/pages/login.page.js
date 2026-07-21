@@ -1,15 +1,15 @@
 class LoginPage {
 
   get emailInput() {
-    return $('//android.widget.EditText[@resource-id="inputEmail"]');
+    return $('//android.widget.EditText[@content-desc="input-email"]');
   }
 
   get passwordInput() {
-    return $('//android.widget.EditText[@resource-id="inputPassword"]');
+    return $('//android.widget.EditText[@content-desc="input-password"]');
   }
 
   get loginButton() {
-    return $('//android.widget.Button[@text="Login"]');
+    return $('//android.view.ViewGroup[@content-desc="button-LOGIN"]');
   }
 
   get signUpButton() {
@@ -21,11 +21,24 @@ class LoginPage {
   }
 
   get invalidEmailMessage() {
-    return $('//android.view.View[contains(@text,"valid email")]');
+    return $('//android.widget.TextView[@text="Please enter a valid email address"]');
   }
 
   get shortPasswordMessage() {
-    return $('//android.view.View[contains(@text,"8 characters")]');
+    return $('//android.widget.TextView[@text="Please enter at least 8 characters"]');
+  }
+
+  get successAlertTitle() {
+    return $('//android.widget.TextView[contains(@text, "Success") or contains(@text, "successful")]');
+  }
+
+  get successOkButton() {
+    return $('//android.widget.Button[@text="OK"]');
+  }
+
+  async acceptSuccessAlert() {
+    await this.successOkButton.waitForDisplayed({ timeout: 5000 });
+    await this.successOkButton.click();
   }
 
   async fillEmail(email) {
