@@ -1,115 +1,89 @@
 # Mobile Test Automation Challenge
 
-Projeto de automação de testes mobile usando WebdriverIO, Appium, Mocha e Chai para o aplicativo native-demo-app do WebdriverIO.
+Projeto de automação de testes mobile usando WebdriverIO, Appium e Mocha para o aplicativo native-demo-app do WebdriverIO.
 
-## 📋 Índice
+## 📋 Descrição
 
-- [Visão Geral](#visão-geral)
-- [Tecnologias](#tecnologias)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação](#instalação)
-- [Configuração do Ambiente](#configuração-do-ambiente)
-- [Execução Local](#execução-local)
-- [Execução Android](#execução-android)
-- [Execução iOS](#execução-ios)
-- [Geração do Relatório Allure](#geração-do-relatório-allure)
-- [Testes Implementados](#testes-implementados)
-- [Page Object Model](#page-object-model)
-- [Data-Driven Testing](#data-driven-testing)
-- [CI/CD](#cicd)
-- [Troubleshooting](#troubleshooting)
-- [Contribuição](#contribuição)
+Este projeto é uma solução de automação mobile que implementa **14 cenários de teste** cobrindo as principais funcionalidades do aplicativo nativo de demonstração:
 
-## 🎯 Visão Geral
-
-Este projeto implementa uma solução completa de automação mobile com 10 cenários de teste cobrindo as principais funcionalidades do aplicativo:
-
-- ✅ Login/Cadastro
-- ✅ Navegação entre telas
+- ✅ Login e validação de credenciais
+- ✅ Cadastro de novos usuários
 - ✅ Preenchimento de formulários
-- ✅ Validação de mensagens de erro
+- ✅ Interação com switches e dropdowns
+- ✅ Navegação com gestos de swipe
 
-O projeto segue as melhores práticas de automação, incluindo Page Object Model, Data-Driven Testing e relatórios detalhados com Allure.
+O projeto utiliza **Page Object Model** para organização e manutenção, com relatórios detalhados via **Allure Report**.
 
-## 🛠 Tecnologias
+## 🛠 Tecnologias Utilizadas
 
 - **Linguagem:** JavaScript (ES6+)
-- **Framework:** WebdriverIO v8
-- **Biblioteca:** Appium v2
+- **Framework:** WebdriverIO v8.46.6
+- **Automação Mobile:** Appium v3.5.2
 - **Test Runner:** Mocha
-- **Assertions:** Chai
-- **Relatórios:** Allure Report
-- **CI/CD:** GitLab CI/CD
-- **Padrão:** Page Object Model (POM)
+- **Assertions:** Expect WebdriverIO
+- **Relatórios:** Allure Report v2.24.0
+- **Padrão:** Page Object Model
+- **Drivers:** UiAutomator2 (Android), XCUITest (iOS)
 
 ## 📁 Estrutura do Projeto
 
 ```
 mobile-test-automation-challenge/
 ├── config/
-│   ├── wdio.shared.conf.js    # Configuração compartilhada
-│   ├── wdio.android.conf.js    # Configuração Android
-│   └── wdio.ios.conf.js        # Configuração iOS
+│   ├── wdio.shared.conf.js      # Configuração compartilhada
+│   ├── wdio.android.conf.js     # Configuração Android
+│   └── wdio.ios.conf.js         # Configuração iOS
 │
 ├── tests/
-│   ├── specs/                  # Arquivos de teste
-│   │   ├── login.spec.js
-│   │   ├── cadastro.spec.js
-│   │   ├── navegacao.spec.js
-│   │   └── formulario.spec.js
-│   │
-│   ├── pages/                  # Page Objects (POM)
-│   │   ├── base.page.js
-│   │   ├── login.page.js
-│   │   ├── cadastro.page.js
-│   │   ├── menu.page.js
-│   │   ├── forms.page.js
-│   │   └── navigation.page.js
-│   │
-│   ├── helpers/                # Funções auxiliares
-│   │   ├── constants.js
-│   │   ├── utils.js
-│   │   ├── assertions.js
-│   │   ├── screenshot-helper.js
-│   │   └── data-helper.js
-│   │
-│   ├── data/                   # Dados para testes
+│   ├── data/                    # Dados para testes
 │   │   └── test-data.json
-│   │
-│   └── hooks.js                # Hooks globais Mocha
+│   ├── helpers/                 # Funções auxiliares
+│   │   └── screenshot-helper.js
+│   ├── pages/                   # Page Objects (POM)
+│   │   ├── cadastro.page.js
+│   │   ├── forms.page.js
+│   │   ├── login.page.js
+│   │   ├── menu.page.js
+│   │   └── navigation.page.js
+│   ├── specs/                   # Arquivos de teste
+│   │   ├── cadastro.spec.js
+│   │   ├── formulario.spec.js
+│   │   ├── login.spec.js
+│   │   └── navegacao.spec.js
+│   └── hooks.js                 # Hooks globais Mocha
 │
-├── screenshots/                # Evidências de falhas
-├── allure-results/             # Resultados Allure
-├── allure-report/              # Relatório HTML
-├── logs/                       # Logs de execução
+├── apps/
+│   └── android/                 # APK Android (deve ser baixado)
 │
-├── .gitlab-ci.yml              # Pipeline GitLab
+├── .gitlab-ci.yml               # Pipeline GitLab CI/CD
 ├── package.json
 ├── README.md
-├── SETUP.md
-└── ARQUITETURA.md
+├── SETUP.md                     # Guia detalhado de setup
+└── ARQUITETURA.md               # Documentação de arquitetura
 ```
 
 ## 📦 Pré-requisitos
 
 ### Gerais
 - **Node.js** v18 ou superior
-- **npm** ou **yarn**
+- **npm** (ou yarn)
 
 ### Para Android
 - **Java** v11 ou superior
 - **Android SDK** (API 29+)
-- **Emulador Android** ou dispositivo real
+- **Emulador Android** rodando ou dispositivo real conectado
+- **ADB** configurado
 
 ### Para iOS (apenas Mac)
 - **Xcode** v13 ou superior
 - **iOS Simulator** (iPhone 14+)
 - **CocoaPods**
 
-### Para CI/CD
-- **GitLab Runner** configurado
-- **Docker** (para containers)
+### Para Execução dos Testes
+- **Appium** v2.x instalado
+- **Driver UiAutomator2** (Android)
+- **Driver XCUITest** (iOS)
+- **Allure Commandline**
 
 ## 🚀 Instalação
 
@@ -134,81 +108,40 @@ appium driver install uiautomator2  # Android
 appium driver install xcuitest      # iOS
 ```
 
-### 4. Instalar Allure
+### 4. Baixar o App de Teste
 
 ```bash
-npm install -g allure-commandline
-```
-
-## ⚙️ Configuração do Ambiente
-
-### Android
-
-1. **Configurar Android SDK**
-
-```bash
-export ANDROID_HOME=$HOME/Android/Sdk
-export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
-```
-
-2. **Criar e Iniciar Emulador**
-
-```bash
-# Via Android Studio: Tools > AVD Manager > Create
-# Ou via CLI:
-emulator -avd <nome-do-emulador> &
-```
-
-3. **Verificar Conexão**
-
-```bash
-adb devices
-```
-
-### iOS (Apenas Mac)
-
-1. **Instalar Xcode**
-
-```bash
-# Via Mac App Store
-sudo xcodebuild -license accept
-```
-
-2. **Iniciar Simulador**
-
-```bash
-xcrun simctl boot "iPhone 14"
-```
-
-3. **Verificar Dispositivos**
-
-```bash
-xcrun simctl list devices booted
-```
-
-### Download do App de Teste
-
-```bash
-# Criar diretórios
-mkdir -p apps/android apps/ios
+# Criar diretório
+mkdir -p apps/android
 
 # Baixar Android APK
 curl -L https://github.com/webdriverio/native-demo-app/releases/download/v1.0.6/android-natives-demo-1.0.6.apk \
-  -o apps/android/Android-NativeDemoApp.apk
+  -o apps/android/android.wdio.native.app.v2.2.0.apk
 ```
 
-## 🏃 Execução Local
-
-### Comandos Básicos
+### 5. Configurar Ambiente Android
 
 ```bash
-# Instalar dependências
-npm install
+# Variáveis de ambiente
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
 
-# Executar testes Android
+# Iniciar emulador Android
+emulator -avd <nome-do-emulador> &
+
+# Verificar conexão
+adb devices
+```
+
+## 🏃 Execução dos Testes
+
+### Comandos Disponíveis
+
+```bash
+# Executar todos os testes Android
 npm run test:android
 
-# Executar testes iOS
+# Executar todos os testes iOS
 npm run test:ios
 
 # Gerar relatório Allure
@@ -218,333 +151,231 @@ npm run allure:report
 npm run allure:open
 ```
 
-## 📱 Execução Android
-
-### Comandos
+### Executar Teste Específico
 
 ```bash
-# Executar todos os testes
-npm run test:android
+# Android
+npx wdio run config/wdio.android.conf.js --spec tests/specs/login.spec.js
 
-# Testes específicos
-npm run test:android -- --spec login.spec.js
+# iOS
+npx wdio run config/wdio.ios.conf.js --spec tests/specs/cadastro.spec.js
+```
 
-# Com filtro (grep)
+### Executar com Filtro
+
+```bash
+# Por nome do teste
 npm run test:android -- --grep "login com sucesso"
 
+# Por suite
+npm run test:android -- --grep "Login de usuário"
+
 # Excluir testes
-npm run test:android -- --grep "^((?!login).)*$"
-
-# Smoke tests
-npm run test:android -- --grep "@smoke"
+npm run test:android -- --grep "^((?!cadastro).)*$"
 ```
 
-### Pré-requisitos
+## ✅ Testes Automatizados
 
-- Emulador Android rodando ou dispositivo conectado
-- Appium servidor iniciado
-- APK disponível em `apps/android/`
+| Fluxo | Cenários | Total |
+|-------|----------|-------|
+| **Login** | Login com sucesso, Email inválido, Senha curta | 3 |
+| **Cadastro** | Cadastro com sucesso, Senha curta, Senhas diferentes, Email inválido | 4 |
+| **Forms** | Exibir texto digitado, Alterar switch, Selecionar dropdown, Botão ativo | 4 |
+| **Navegação** | Acessar tela Swipe, Arrastar para direita, Voltar arrastando | 3 |
+| **TOTAL** | | **14** |
 
-### Verificação
+### Detalhamento dos Cenários
+
+#### Login (3 testes)
+- `deve realizar login com sucesso usando dados válidos`
+- `deve exibir erro ao realizar login com email inválido`
+- `deve exibir erro ao realizar login com senha menor que 8 caracteres`
+
+#### Cadastro (4 testes)
+- `deve realizar cadastro com sucesso usando dados válidos`
+- `deve exibir erro ao cadastrar com senha menor que 8 caracteres`
+- `deve exibir erro ao cadastrar com confirmação de senha diferente`
+- `deve exibir erro ao cadastrar com email inválido`
+
+#### Forms (4 testes)
+- `deve exibir o texto digitado no campo "You have typed"`
+- `deve alterar o estado do switch`
+- `deve selecionar uma opção no dropdown`
+- `deve exibir um alerta ao clicar no botão ativo`
+
+#### Navegação (3 testes)
+- `deve acessar a tela Swipe`
+- `deve arrastar o card para a direita`
+- `deve voltar arrastando para a esquerda`
+
+## 📊 Relatórios
+
+### Allure Report
+
+O projeto utiliza Allure Report para geração de relatórios detalhados.
+
+**Localização dos resultados:**
+- Resultados brutos: `allure-results/`
+- Relatório HTML: `allure-report/`
+- Screenshots: `screenshots/`
+- Logs: `logs/android/` ou `logs/ios/`
+
+### Gerar Relatório
 
 ```bash
-# Verificar dispositivos conectados
-adb devices
-
-# Verificar Appium
-curl http://localhost:4723/wd/hub/status
-```
-
-##  Execução iOS
-
-### Comandos
-
-```bash
-# Executar todos os testes
-npm run test:ios
-
-# Testes específicos
-npm run test:ios -- --spec cadastro.spec.js
-
-# Com filtro
-npm run test:ios -- --grep "cadastro"
-```
-
-### Pré-requisitos
-
-- iOS Simulator rodando
-- Xcode instalado
-- App .app disponível em `apps/ios/`
-
-### Verificação
-
-```bash
-# Verificar simuladores
-xcrun simctl list devices booted
-```
-
-## 📊 Geração do Relatório Allure
-
-### 1. Executar Testes
-
-```bash
+# 1. Executar os testes
 npm run test:android
-```
 
-### 2. Gerar Relatório
-
-```bash
+# 2. Gerar relatório
 npm run allure:report
-```
 
-### 3. Abrir Relatório
-
-```bash
+# 3. Abrir no browser
 npm run allure:open
-
-# Ou manualmente
-cd allure-report
-python3 -m http.server 8080
-# Abrir: http://localhost:8080
 ```
 
 ### Conteúdo do Relatório
 
-- ✅ Resumo dos testes executados
-- ✅ Screenshots das falhas
-- ✅ Logs de execução
-- ✅ Informações do ambiente
-- ✅ Timeline de execução
-- ✅ Histórico de execuções
-
-## ✅ Testes Implementados
-
-### 1. Login com Sucesso
-Verifica se usuário consegue fazer login com credenciais válidas.
-
-**Arquivo:** `tests/specs/login.spec.js`
-
-### 2. Login com Senha Inválida
-Verifica se sistema rejeita login com senha incorreta.
-
-**Arquivo:** `tests/specs/login.spec.js`
-
-### 3. Login com Campos Vazios
-Verifica se sistema valida campos obrigatórios de login.
-
-**Arquivo:** `tests/specs/login.spec.js`
-
-### 4. Cadastro com Sucesso
-Verifica se usuário consegue se cadastrar com dados válidos.
-
-**Arquivo:** `tests/specs/cadastro.spec.js`
-
-### 5. Cadastro com E-mail Inválido
-Verifica se sistema valida formato de e-mail.
-
-**Arquivo:** `tests/specs/cadastro.spec.js`
-
-### 6. Cadastro com Senhas Diferentes
-Verifica se sistema valida confirmação de senha.
-
-**Arquivo:** `tests/specs/cadastro.spec.js`
-
-### 7. Navegação Entre Telas
-Verifica se usuário consegue navegar entre diferentes telas.
-
-**Arquivo:** `tests/specs/navegacao.spec.js`
-
-### 8. Navegação pelo Menu Inferior
-Verifica se todas as abas do menu são acessíveis.
-
-**Arquivo:** `tests/specs/navegacao.spec.js`
-
-### 9. Preenchimento de Formulário
-Verifica se usuário consegue preencher formulários corretamente.
-
-**Arquivo:** `tests/specs/formulario.spec.js`
-
-### 10. Validação de Mensagens de Erro
-Verifica se sistema mostra mensagens de erro apropriadas.
-
-**Arquivo:** `tests/specs/formulario.spec.js`
+- ✅ Resumo de execução (quantidade de passou/falhou)
+- ✅ Screenshots automáticos em falhas
+- ✅ Logs de erro detalhados
+- ✅ Tempo de execução por teste
+- ✅ Informações do ambiente (Platform, Device)
 
 ## 🎨 Page Object Model
 
-O projeto implementa o padrão Page Object Model para melhor organização e manutenção.
+O projeto implementa o padrão Page Object Model para separação de responsabilidades.
 
-### Estrutura
+### Page Objects Implementados
 
-```
-tests/pages/
-├── base.page.js          # Classe base com métodos comuns
-├── login.page.js         # Tela de Login
-├── cadastro.page.js      # Tela de Cadastro
-├── menu.page.js          # Menu Principal
-├── forms.page.js         # Formulários
-└── navigation.page.js    # Navegação
-```
+- **login.page.js** - Tela de Login
+- **cadastro.page.js** - Tela de Cadastro
+- **forms.page.js** - Tela de Formulários
+- **navigation.page.js** - Tela de Navegação/Swipe
+- **menu.page.js** - Menu Principal
 
 ### Exemplo de Uso
 
 ```javascript
 const LoginPage = require('../pages/login.page');
 
-const loginPage = new LoginPage();
-
 // Realizar login
-await loginPage.performLogin('email@example.com', 'senha123');
+await LoginPage.login('test@example.com', 'password123');
 
 // Verificar sucesso
-const success = await loginPage.isLoginSuccess();
+await expect(LoginPage.successAlertTitle).toBeDisplayed();
 ```
 
-### Benefícios
+### Helpers
 
-- ✅ Separação de responsabilidades
-- ✅ Reutilização de código
-- ✅ Manutenção facilitada
-- ✅ Testes mais legíveis
+- **screenshot-helper.js** - Captura automática de screenshots em falhas
 
 ## 📊 Data-Driven Testing
 
-Os testes suportam execução data-driven usando arquivos JSON.
-
-### Estrutura dos Dados
+Os testes utilizam dados externos do arquivo `tests/data/test-data.json`:
 
 ```json
 {
-  "login": [
-    {
-      "cenario": "login-sucesso",
-      "email": "teste@example.com",
-      "senha": "123456",
-      "esperado": { "sucesso": true }
+  "login": {
+    "valido": {
+      "email": "test@example.com",
+      "senha": "password123"
+    },
+    "senhaCurta": {
+      "email": "test@example.com",
+      "senha": "1234567",
+      "mensagem": "Please enter at least 8 characters"
     }
-  ]
+  }
 }
-```
-
-### Execução Data-Driven
-
-Os testes carregam automaticamente dados de `tests/data/test-data.json`:
-
-```javascript
-const { getLoginData } = require('../helpers/data-helper');
-
-const scenarios = getLoginData();
-
-scenarios.forEach(scenario => {
-  it(`cenário ${scenario.cenario}`, async () => {
-    // Executa teste com dados do cenário
-  });
-});
 ```
 
 ## 🚀 CI/CD
 
 ### GitLab CI/CD
 
-O projeto inclui pipeline completo configurado em `.gitlab-ci.yml`.
+O projeto inclui configuração de pipeline em `.gitlab-ci.yml`.
 
-#### Stages
+#### Stages Configuradas
 
-1. **test**: Executa testes Android e iOS em paralelo
-2. **report**: Gera relatório Allure combinado
-3. **deploy**: Publica relatório no GitLab Pages
+1. **test** - Executa testes Android e iOS em paralelo
+2. **report** - Gera relatório Allure combinado
+3. **deploy** - Publica relatório no GitLab Pages (opcional)
 
-#### Estrutura
+#### Jobs
 
-```yaml
-stages:
-  - test
-  - report
-  - deploy
+| Job | Stage | Descrição |
+|-----|-------|-----------|
+| `test_android` | test | Executa testes Android |
+| `test_ios` | test | Executa testes iOS |
+| `generate_report` | report | Gera relatório Allure |
+| `pages` | deploy | Publica no GitLab Pages |
+| `smoke_test` | test | Testes rápidos com tag @smoke |
 
-test_android:
-  stage: test
-  script: npm run test:android
 
-test_ios:
-  stage: test
-  script: npm run test:ios
+## 🔧 Configurações
 
-generate_report:
-  stage: report
-  script: npm run allure:report
-```
+### Android (wdio.android.conf.js)
 
-#### Execução
+- **Automation:** UiAutomator2
+- **Device:** Android_Emulator
+- **App:** `apps/android/android.wdio.native.app.v2.2.0.apk`
+- **Porta Appium:** 4723
+- **Timeout:** 90000ms
 
-```bash
-# Pipeline executa automaticamente em:
-# - Commits para main
-# - Merge requests
+### iOS (wdio.ios.conf.js)
 
-# Execução manual:
-# GitLab > CI/CD > Pipelines > Run Pipeline
-```
+- **Automation:** XCUITest
+- **Device:** iPhone 14
+- **iOS Version:** 16.2
+- **App:** `apps/ios/NativeDemoApp.app`
 
-#### Artefatos
+### Shared (wdio.shared.conf.js)
 
-- **Screenshots**: 7 dias
-- **Logs**: 7 dias
-- **Relatório**: 30 dias
+Configurações compartilhadas entre Android e iOS:
+- Framework: Mocha (BDD)
+- Reporters: Spec e Allure
+- WaitforTimeout: 20000ms
 
-## 🔧 Troubleshooting
+## ⚠️ Observações e Limitações
 
-### Problemas Comuns
+### Limitações Conhecidas
 
-#### 1. Emulador não inicia
+1. **Apps não inclusos no repositório**
+   - A pasta `apps/android/` está vazia
+   - O APK deve ser baixado manualmente (ver seção Instalação)
+   - Para iOS, o `.app` também deve ser obtido separadamente
 
-```bash
-# Solução: Reiniciar ADB
-adb kill-server
-adb start-server
-```
+2. **iOS não validado**
+   - A configuração iOS existe mas requer Mac
+   - **Não há evidência de que os testes executaram em iOS**
+   - Requer Xcode, CocoaPods e iOS Simulator
 
-#### 2. Appium não conecta
+3. **Selectors específicos para Android**
+   - Page Objects usam XPath com `@content-desc`
+   - **Pode não funcionar em iOS sem adaptação**
+   - Para iOS real, seria necessário selectors diferentes
 
-```bash
-# Verificar Appium
-curl http://localhost:4723/wd/hub/status
+4. **CI/CD dependente de infraestrutura**
+   - Pipeline configurado mas **não validado**
+   - Requer GitLab Runner com capacidade de executar emuladores
+   - Emuladores em containers Docker são complexos de configurar
+   - Considere usar serviços cloud (BrowserStack, Sauce Labs)
 
-# Reiniciar
-pkill -f appium
-appium &
-```
+5. **Helpers limitados**
+   - Apenas `screenshot-helper.js` está implementado
+   - Documentação cita outros helpers que não existem no código
 
-#### 3. Testes falham com "element not found"
+## 📝 Documentação Adicional
 
-```bash
-# Solução: Verificar selectors
-# Android vs iOS usam selectors diferentes
-# Logs em tests/helpers/screenshot-helper.js
-```
+- **[SETUP.md](SETUP.md)** - Guia detalhado de configuração de ambiente
+- **[ARQUITETURA.md](ARQUITETURA.md)** - Documentação de arquitetura e padrões
 
-#### 4. WebDriverAgent não compila (iOS)
+## 🔗 Links Úteis
 
-```bash
-# Solução: Primeira execução demora (10+ min)
-# Ou assinar código com development team
-```
+- [WebdriverIO Documentation](https://webdriver.io/docs)
+- [Appium Documentation](https://appium.io/docs/en/2.0/intro/)
+- [Allure Report](https://docs.qameta.io/allure/)
+- [Native Demo App](https://github.com/webdriverio/native-demo-app)
 
-### Debug Mode
 
-```bash
-# Habilitar debug
-DEBUG=true npm run test:android
 
-# Logs detalhados
-APPIUM_DEBUG=true npm run test:android
-```
-
-### Logs
-
-```bash
-# Ver logs
-cat logs/android-*.log
-
-# Ver screenshots
-ls -la screenshots/
-```
