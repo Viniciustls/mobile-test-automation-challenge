@@ -4,7 +4,7 @@
       "cenario": "login-sucesso",
       "descricao": "Login com credenciais válidas",
       "email": "teste@example.com",
-      "senha": "123456",
+      "senha": "12345678",
       "esperado": {
         "sucesso": true,
         "mensagem": "You are logged in"
