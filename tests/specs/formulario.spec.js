@@ -3,8 +3,7 @@ const FormsPage = require('../pages/forms.page');
 describe('Preenchimento de formulário', () => {
 
   beforeEach(async () => {
-    await $('//android.widget.Button[@content-desc="Forms"]')
-      .click();
+    await FormsPage.navigateToForms();
 
     await expect(FormsPage.inputField)
       .toBeDisplayed();

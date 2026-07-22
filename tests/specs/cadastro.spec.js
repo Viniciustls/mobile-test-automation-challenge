@@ -5,8 +5,7 @@ const testData = require('../data/test-data.json');
 describe('Cadastro de usuário', () => {
 
   beforeEach(async () => {
-    await $('//android.widget.Button[@content-desc="Login"]')
-      .click();
+    await LoginPage.navigateToLogin();
 
     await LoginPage.navigateToSignUp();
 

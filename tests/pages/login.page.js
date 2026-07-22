@@ -1,5 +1,9 @@
 class LoginPage {
 
+  get loginTabButton() {
+    return $('//android.widget.Button[@content-desc="Login"]');
+  }
+
   get emailInput() {
     return $('//android.widget.EditText[@content-desc="input-email"]');
   }
@@ -34,6 +38,10 @@ class LoginPage {
 
   get successOkButton() {
     return $('//android.widget.Button[@text="OK"]');
+  }
+
+  async navigateToLogin() {
+    await this.loginTabButton.click();
   }
 
   async acceptSuccessAlert() {
