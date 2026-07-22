@@ -45,7 +45,16 @@ exports.config = {
     ],
   ],
 
-  services: [],
+  services: [
+    [
+      'appium',
+      {
+        args: {
+          port: 4723,
+        },
+      },
+    ],
+  ],
 
   capabilities: [
     {
@@ -78,11 +87,6 @@ exports.config = {
       'appium:disableWindowAnimation': true,
     },
   ],
-
-  hostname: 'localhost',
-  port: 4723,
-  path: '/',
-  protocol: 'http',
 
   outputDir: join(process.cwd(), 'logs', 'android'),
   logLevel: 'info',
