@@ -10,6 +10,8 @@ const APP_PATH =
   );
 
 exports.config = {
+  maxInstances: 1,
+
   framework: 'mocha',
 
   mochaOpts: {
