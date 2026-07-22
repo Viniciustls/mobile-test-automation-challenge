@@ -1,4 +1,5 @@
 const LoginPage = require('../pages/login.page');
+const testData = require('../data/test-data.json');
 
 describe('Login de usuário', () => {
 
@@ -10,15 +11,12 @@ describe('Login de usuário', () => {
       .toBeDisplayed();
   });
 
-  const email = 'test@example.com';
-  const senha = 'password123';
-  const senhaCurta = '1234567';
-  const invalidEmail = 'teste';
-
   it('deve realizar login com sucesso usando dados válidos', async () => {
+    const data = testData.login.valido;
+
     await LoginPage.login(
-      email,
-      senha
+      data.email,
+      data.senha
     );
 
     await expect(LoginPage.successAlertTitle)
@@ -28,9 +26,11 @@ describe('Login de usuário', () => {
   });
 
   it('deve exibir erro ao realizar login com email inválido', async () => {
+    const data = testData.login.emailInvalido;
+
     await LoginPage.login(
-      invalidEmail,
-      senha
+      data.email,
+      data.senha
     );
 
     await expect(LoginPage.invalidEmailMessage)
@@ -38,14 +38,16 @@ describe('Login de usuário', () => {
 
     await expect(LoginPage.invalidEmailMessage)
       .toHaveText(
-        'Please enter a valid email address'
+        data.mensagem
       );
   });
 
   it('deve exibir erro ao realizar login com senha menor que 8 caracteres', async () => {
+    const data = testData.login.senhaCurta;
+
     await LoginPage.login(
-      email,
-      senhaCurta
+      data.email,
+      data.senha
     );
 
     await expect(LoginPage.shortPasswordMessage)
@@ -53,7 +55,7 @@ describe('Login de usuário', () => {
 
     await expect(LoginPage.shortPasswordMessage)
       .toHaveText(
-        'Please enter at least 8 characters'
+        data.mensagem
       );
   });
 });

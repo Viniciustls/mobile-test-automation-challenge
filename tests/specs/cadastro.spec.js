@@ -1,5 +1,6 @@
 const LoginPage = require('../pages/login.page');
 const CadastroPage = require('../pages/cadastro.page');
+const testData = require('../data/test-data.json');
 
 describe('Cadastro de usuário', () => {
 
@@ -13,17 +14,13 @@ describe('Cadastro de usuário', () => {
       .toBeDisplayed();
   });
 
-  const email = 'test@example.com';
-  const senha = 'password123';
-  const confirmSenha = 'password123';
-  const senhaCurta = '1234567';
-  const invalidEmail = 'teste';
-
   it('deve realizar cadastro com sucesso usando dados válidos', async () => {
+    const data = testData.cadastro.valido;
+
     await CadastroPage.register(
-      email,
-      senha,
-      confirmSenha
+      data.email,
+      data.senha,
+      data.confirmSenha
     );
 
     await expect(CadastroPage.successAlertTitle)
@@ -33,10 +30,12 @@ describe('Cadastro de usuário', () => {
   });
 
   it('deve exibir erro ao cadastrar com senha menor que 8 caracteres', async () => {
+    const data = testData.cadastro.senhaCurta;
+
     await CadastroPage.register(
-      email,
-      senhaCurta,
-      senhaCurta
+      data.email,
+      data.senha,
+      data.confirmSenha
     );
 
     await expect(CadastroPage.shortPasswordMessage)
@@ -44,15 +43,17 @@ describe('Cadastro de usuário', () => {
 
     await expect(CadastroPage.shortPasswordMessage)
       .toHaveText(
-        'Please enter at least 8 characters'
+        data.mensagem
       );
   });
 
   it('deve exibir erro ao cadastrar com confirmação de senha diferente', async () => {
+    const data = testData.cadastro.senhaDiferente;
+
     await CadastroPage.register(
-      email,
-      senha,
-      senhaCurta
+      data.email,
+      data.senha,
+      data.confirmSenha
     );
 
     await expect(CadastroPage.passwordMismatchMessage)
@@ -60,15 +61,17 @@ describe('Cadastro de usuário', () => {
 
     await expect(CadastroPage.passwordMismatchMessage)
       .toHaveText(
-        'Please enter the same password'
+        data.mensagem
       );
   });
 
   it('deve exibir erro ao cadastrar com email inválido', async () => {
+    const data = testData.cadastro.emailInvalido;
+
     await CadastroPage.register(
-      invalidEmail,
-      senha,
-      confirmSenha
+      data.email,
+      data.senha,
+      data.confirmSenha
     );
 
     await expect(CadastroPage.invalidEmailMessage)
@@ -76,7 +79,7 @@ describe('Cadastro de usuário', () => {
 
     await expect(CadastroPage.invalidEmailMessage)
       .toHaveText(
-        'Please enter a valid email address'
+        data.mensagem
       );
   });
 });

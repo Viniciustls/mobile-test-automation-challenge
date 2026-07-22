@@ -23,5 +23,23 @@
       "confirmSenha": "password123",
       "mensagem": "Please enter a valid email address"
     }
+  },
+  
+  "login": {
+    "valido": {
+      "email": "test@example.com",
+      "senha": "password123"
+    },
+    "emailInvalido": {
+      "email": "teste",
+      "senha": "password123",
+      "mensagem": "Please enter a valid email address"
+    },
+    "senhaCurta": {
+      "email": "test@example.com",
+      "senha": "1234567",
+      "mensagem": "Please enter at least 8 characters"
+    }
   }
 }
+

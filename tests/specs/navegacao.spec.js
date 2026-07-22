@@ -12,8 +12,6 @@ describe('Navegação com swipe', () => {
   });
 
   it('deve arrastar o card para a direita', async () => {
-    const initialText = await SwipePage.getFirstCardText();
-
     await SwipePage.swipeRight();
 
     await expect(SwipePage.secondCard)
