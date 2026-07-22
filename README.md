@@ -336,35 +336,6 @@ Configurações compartilhadas entre Android e iOS:
 - Reporters: Spec e Allure
 - WaitforTimeout: 20000ms
 
-## ⚠️ Observações e Limitações
-
-### Limitações Conhecidas
-
-1. **Apps não inclusos no repositório**
-   - A pasta `apps/android/` está vazia
-   - O APK deve ser baixado manualmente (ver seção Instalação)
-   - Para iOS, o `.app` também deve ser obtido separadamente
-
-2. **iOS não validado**
-   - A configuração iOS existe mas requer Mac
-   - **Não há evidência de que os testes executaram em iOS**
-   - Requer Xcode, CocoaPods e iOS Simulator
-
-3. **Selectors específicos para Android**
-   - Page Objects usam XPath com `@content-desc`
-   - **Pode não funcionar em iOS sem adaptação**
-   - Para iOS real, seria necessário selectors diferentes
-
-4. **CI/CD dependente de infraestrutura**
-   - Pipeline configurado mas **não validado**
-   - Requer GitLab Runner com capacidade de executar emuladores
-   - Emuladores em containers Docker são complexos de configurar
-   - Considere usar serviços cloud (BrowserStack, Sauce Labs)
-
-5. **Helpers limitados**
-   - Apenas `screenshot-helper.js` está implementado
-   - Documentação cita outros helpers que não existem no código
-
 ## 📝 Documentação Adicional
 
 - **[SETUP.md](SETUP.md)** - Guia detalhado de configuração de ambiente
